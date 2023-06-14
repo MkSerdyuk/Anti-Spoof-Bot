@@ -23,7 +23,7 @@ class AntiSpoof:
         height = int(vcap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         fps = int(vcap.get(cv2.CAP_PROP_FPS))
 
-        response_path = vid_path.replace(".mp4", ".result.mp4")
+        response_path = vid_path.replace(".", ".result.")
 
         response = cv2.VideoWriter(
             response_path,
