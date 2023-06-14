@@ -54,7 +54,7 @@ async def handle_photo(message: Message):
 
     photo_path = model.get_processed_photo_path(photo_path)
 
-    if photo_path == None:
+    if photo_path is None:
         await message.reply( FACE_NOT_FOUND_PHRASE)
         return
 
@@ -71,7 +71,7 @@ async def handle_video(message: Message):
 
     video_path = model.get_processed_video_path(video_path)
 
-    if video_path == None:
+    if video_path is None:
         await message.reply(FACE_NOT_FOUND_PHRASE)
         return
 
@@ -88,7 +88,7 @@ async def handle_video_note(message: Message):
 
     video_note_path = model.get_processed_video_path(video_note_path)
 
-    if video_note_path == None:
+    if video_note_path is None:
         await message.reply(FACE_NOT_FOUND_PHRASE)
         return
 

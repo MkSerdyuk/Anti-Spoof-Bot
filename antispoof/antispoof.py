@@ -159,7 +159,6 @@ class AntiSpoof:
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
             for x0, y0, x1, y1 in faces:
-                face_not_found = False
                 x0 -= self.PADDING
                 y0 -= 3 * self.PADDING
                 x1 += self.PADDING
@@ -223,8 +222,10 @@ class AntiSpoof:
                     1,
                 )
 
+                face_not_found = False
+
         except:
-            return None
+            pass
 
         if face_not_found:
             return None
