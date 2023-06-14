@@ -16,7 +16,7 @@ class AntiSpoof:
         self.logits_sum = np.array([[0, 0]], dtype=float)
         self.prediction_sum = -1
 
-    def get_processed_video_path(self, vid_path: str):
+    def get_processed_video_path(self, vid_path: str) -> str | None:
         vcap = cv2.VideoCapture(vid_path)
 
         width = int(vcap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -50,8 +50,6 @@ class AntiSpoof:
                 frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
                 for x0, y0, x1, y1 in faces:
-                    face_not_found = False
-
                     x0 -= self.PADDING
                     y0 -= 3 * self.PADDING
                     x1 += self.PADDING
@@ -61,11 +59,11 @@ class AntiSpoof:
 
                     if shape[0] > shape[1]:  # определяем ориентацию видео
                         prediction, logits = self.model.model_predict(
-                            frame_rgb[y0:y1][x0:x1]
+                            np.copy(frame[y0:y1, x0:x1, :])
                         )
                     else:
                         prediction, logits = self.model.model_predict(
-                            frame_rgb[x0:x1][y0:y1]
+                            np.copy(frame[x0:x1, y0:y1, :])
                         )
 
                     if self.FRAMES_PER_CALCULATION > 1:
@@ -129,6 +127,8 @@ class AntiSpoof:
                         1,
                     )
 
+                    face_not_found = False
+
             except:
                 prediction_sum = -1
                 frame_counter = 1
@@ -139,11 +139,11 @@ class AntiSpoof:
         vcap.release()
 
         if face_not_found:
-            return -1
+            return None
 
         return response_path
 
-    def get_processed_photo_path(self, photo_path: str):
+    def get_processed_photo_path(self, photo_path: str) -> str | None:
         frame = cv2.imread(photo_path)
 
         response_path = photo_path.replace(".", ".result.")
@@ -169,11 +169,11 @@ class AntiSpoof:
 
                 if shape[0] > shape[1]:  # определяем ориентацию видео
                     prediction, logits = self.model.model_predict(
-                        frame_rgb[y0:y1][x0:x1]
+                        np.copy(frame[y0:y1, x0:x1, :])
                     )
                 else:
                     prediction, logits = self.model.model_predict(
-                        frame_rgb[x0:x1][y0:y1]
+                        np.copy(frame[x0:x1, y0:y1, :])
                     )
 
                 if prediction:
@@ -224,10 +224,10 @@ class AntiSpoof:
                 )
 
         except:
-            pass
+            return None
 
         if face_not_found:
-            return -1
+            return None
 
         cv2.imwrite(response_path, frame)
 

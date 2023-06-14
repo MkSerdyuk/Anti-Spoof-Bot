@@ -20,15 +20,11 @@ model = antispoof.AntiSpoof()
 
 print("Model loaded")
 
-
-@dp.message_handler(commands=["start", "help"])
-async def handle_start(message: Message):
-    await message.reply(
-        """
-Привет, этот бот использует афнти-спуффинговую модель. 
+HELLO_PHRASE = """
+Привет, этот бот использует анти-спуффинговую модель. 
 
 Отправьте ему фото, видео или кружочек, тогда бот проверит файл на предмет спуфинга. Рекомендуется отправлять короткие видео, чтобы уменьшить время ожидания.
-Точность работы на видео больше в связи возможностью анализа сразу нескольких кадров.
+*Точность работы на видео больше в связи возможностью анализа сразу нескольких кадров.*
 
 Обозначения:
 🟩 Зеленая рамка вокруг лица означает, что оно настоящее. 
@@ -39,7 +35,15 @@ async def handle_start(message: Message):
 
 Приятного пользования!
 """
-    )
+
+FACE_NOT_FOUND_PHRASE = "🔍Лицо не найдено. Попробуйте cделать фото с хорошим освещением"
+
+PROCESSING_PHRASE = "⏳Видео обрабатывается, это может занять некоторое время"
+
+
+@dp.message_handler(commands=["start", "help"])
+async def handle_start(message: Message):
+    await message.reply( HELLO_PHRASE, parse_mode="Markdown")
 
 
 @dp.message_handler(content_types=ContentType.PHOTO)
@@ -50,10 +54,8 @@ async def handle_photo(message: Message):
 
     photo_path = model.get_processed_photo_path(photo_path)
 
-    if photo_path == -1:
-        await message.reply(
-            "🔍Лицо не найдено. Попробуйте cделать фото с хорошим освещением"
-        )
+    if photo_path == None:
+        await message.reply( FACE_NOT_FOUND_PHRASE)
         return
 
     await message.reply_photo(photo=open(photo_path, "rb"))
@@ -65,14 +67,12 @@ async def handle_video(message: Message):
 
     video_path = (await video.download(destination_dir="tmp/")).name
 
-    await message.reply("⏳Видео обрабатывается, это может занять некоторое время")
+    await message.reply(PROCESSING_PHRASE)
 
     video_path = model.get_processed_video_path(video_path)
 
-    if video_path == -1:
-        await message.reply(
-            "🔍Лицо не найдено. Попробуйтее сделать видео с хорошим освещением"
-        )
+    if video_path == None:
+        await message.reply(FACE_NOT_FOUND_PHRASE)
         return
 
     await message.reply_video(video=open(video_path, "rb"))
@@ -84,14 +84,12 @@ async def handle_video_note(message: Message):
 
     video_note_path = (await video_note.download(destination_dir="tmp/")).name
 
-    await message.reply("⏳Видео обрабатывается, это может занять некоторое время")
+    await message.reply(PROCESSING_PHRASE)
 
     video_note_path = model.get_processed_video_path(video_note_path)
 
-    if video_note_path == -1:
-        await message.reply(
-            "🔍Лицо не найдено. Попробуйтее сделать видео с хорошим освещением"
-        )
+    if video_note_path == None:
+        await message.reply(FACE_NOT_FOUND_PHRASE)
         return
 
     await message.reply_video_note(video_note=open(video_note_path, "rb"))

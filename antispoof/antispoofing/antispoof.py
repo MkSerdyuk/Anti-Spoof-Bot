@@ -10,7 +10,11 @@ class Antispoof:
 
     def model_predict(self, frame):
         transform = T.Compose(
-            [T.ToTensor(), T.Resize(size=(224, 224)), T.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))]
+            [
+                T.ToTensor(),
+                T.Resize(size=(224, 224)),
+                T.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)),
+            ]
         )
         frame = transform(frame)
         with torch.no_grad():
